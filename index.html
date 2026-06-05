@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mapa Interativo - Parques Tecnológicos do Brasil</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f7f7f7;
+    }
+    header {
+      padding: 16px 24px;
+      background: #1f2937;
+      color: white;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+    header p {
+      margin: 6px 0 0;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    #map {
+      height: 78vh;
+      width: 100%;
+    }
+    .info {
+      padding: 12px 14px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+      min-width: 220px;
+      line-height: 1.45;
+    }
+    .info h3 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+    .legend {
+      line-height: 18px;
+      color: #333;
+      background: white;
+      padding: 10px 12px;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    }
+    .legend i {
+      width: 18px;
+      height: 18px;
+      float: left;
+      margin-right: 8px;
+      opacity: 0.85;
+    }
+    footer {
+      padding: 10px 20px;
+      font-size: 12px;
+      color: #555;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Parques Ciêntificos,Tecnológicos e de Inovação no Brasil</h1>
+    <p>Total nacional: 124 parques — Planejamento: 9 | Implantação: 39 | Operação: 76</p>
+  </header>
+
+  <div id="map"></div>
+
+  <footer>
+    Fonte dos dados: InovaData-BR/UFV — https://www.inovadata-br.ufv.br/parks-page.
+    Observação: estados sem registro foram considerados com valor 0.
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const dados = [{"regiao": "Norte", "estado": "Acre", "uf": "AC", "total": 0, "planejamento": 0, "implantacao": 0, "operacao": 0}, {"regiao": "Norte", "estado": "Amapá", "uf": "AP", "total": 0, "planejamento": 0, "implantacao": 0, "operacao": 0}, {"regiao": "Norte", "estado": "Amazonas", "uf": "AM", "total": 7, "planejamento": 2, "implantacao": 5, "operacao": 0}, {"regiao": "Norte", "estado": "Pará", "uf": "PA", "total": 1, "planejamento": 0, "implantacao": 0, "operacao": 1}, {"regiao": "Norte", "estado": "Rondônia", "uf": "RO", "total": 2, "planejamento": 1, "implantacao": 1, "operacao": 0}, {"regiao": "Norte", "estado": "Roraima", "uf": "RR", "total": 0, "planejamento": 0, "implantacao": 0, "operacao": 0}, {"regiao": "Norte", "estado": "Tocantins", "uf": "TO", "total": 3, "planejamento": 0, "implantacao": 3, "operacao": 0}, {"regiao": "Nordeste", "estado": "Alagoas", "uf": "AL", "total": 2, "planejamento": 0, "implantacao": 1, "operacao": 1}, {"regiao": "Nordeste", "estado": "Bahia", "uf": "BA", "total": 2, "planejamento": 0, "implantacao": 1, "operacao": 1}, {"regiao": "Nordeste", "estado": "Ceará", "uf": "CE", "total": 1, "planejamento": 0, "implantacao": 0, "operacao": 1}, {"regiao": "Nordeste", "estado": "Maranhão", "uf": "MA", "total": 4, "planejamento": 0, "implantacao": 3, "operacao": 1}, {"regiao": "Nordeste", "estado": "Paraíba", "uf": "PB", "total": 2, "planejamento": 0, "implantacao": 1, "operacao": 1}, {"regiao": "Nordeste", "estado": "Pernambuco", "uf": "PE", "total": 3, "planejamento": 0, "implantacao": 1, "operacao": 2}, {"regiao": "Nordeste", "estado": "Piauí", "uf": "PI", "total": 1, "planejamento": 0, "implantacao": 1, "operacao": 0}, {"regiao": "Nordeste", "estado": "Rio Grande do Norte", "uf": "RN", "total": 3, "planejamento": 0, "implantacao": 1, "operacao": 2}, {"regiao": "Nordeste", "estado": "Sergipe", "uf": "SE", "total": 3, "planejamento": 0, "implantacao": 2, "operacao": 1}, {"regiao": "Centro-Oeste", "estado": "Goiás", "uf": "GO", "total": 4, "planejamento": 0, "implantacao": 3, "operacao": 1}, {"regiao": "Centro-Oeste", "estado": "Mato Grosso", "uf": "MT", "total": 3, "planejamento": 0, "implantacao": 3, "operacao": 0}, {"regiao": "Centro-Oeste", "estado": "Mato Grosso do Sul", "uf": "MS", "total": 1, "planejamento": 0, "implantacao": 0, "operacao": 1}, {"regiao": "Centro-Oeste", "estado": "Distrito Federal", "uf": "DF", "total": 2, "planejamento": 0, "implantacao": 0, "operacao": 2}, {"regiao": "Sudeste", "estado": "Espírito Santo", "uf": "ES", "total": 3, "planejamento": 0, "implantacao": 2, "operacao": 1}, {"regiao": "Sudeste", "estado": "Minas Gerais", "uf": "MG", "total": 14, "planejamento": 3, "implantacao": 3, "operacao": 8}, {"regiao": "Sudeste", "estado": "Rio de Janeiro", "uf": "RJ", "total": 6, "planejamento": 1, "implantacao": 2, "operacao": 3}, {"regiao": "Sudeste", "estado": "São Paulo", "uf": "SP", "total": 16, "planejamento": 1, "implantacao": 0, "operacao": 15}, {"regiao": "Sul", "estado": "Paraná", "uf": "PR", "total": 14, "planejamento": 1, "implantacao": 3, "operacao": 10}, {"regiao": "Sul", "estado": "Rio Grande do Sul", "uf": "RS", "total": 19, "planejamento": 0, "implantacao": 2, "operacao": 17}, {"regiao": "Sul", "estado": "Santa Catarina", "uf": "SC", "total": 8, "planejamento": 0, "implantacao": 1, "operacao": 7}];
+
+    const porUF = {};
+    const porNome = {};
+
+    dados.forEach(d => {
+      porUF[d.uf] = d;
+      porNome[d.estado.toLowerCase()] = d;
+    });
+
+    const totais = {
+      total: dados.reduce((s, d) => s + d.total, 0),
+      planejamento: dados.reduce((s, d) => s + d.planejamento, 0),
+      implantacao: dados.reduce((s, d) => s + d.implantacao, 0),
+      operacao: dados.reduce((s, d) => s + d.operacao, 0)
+    };
+
+    const map = L.map('map').setView([-14.235, -51.9253], 4);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 8,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const info = L.control();
+
+    info.onAdd = function () {
+      this._div = L.DomUtil.create('div', 'info');
+      this.update();
+      return this._div;
+    };
+
+    info.update = function (d) {
+      this._div.innerHTML = d ? `
+        <h3>${d.estado} (${d.uf})</h3>
+        <b>Total:</b> ${d.total}<br>
+        <b>Planejamento:</b> ${d.planejamento}<br>
+        <b>Implantação:</b> ${d.implantacao}<br>
+        <b>Operação:</b> ${d.operacao}<br>
+        <b>Região:</b> ${d.regiao}
+      ` : `
+        <h3>Brasil</h3>
+        Passe o mouse sobre um estado.<br><br>
+        <b>Total:</b> ${totais.total}<br>
+        <b>Planejamento:</b> ${totais.planejamento}<br>
+        <b>Implantação:</b> ${totais.implantacao}<br>
+        <b>Operação:</b> ${totais.operacao}
+      `;
+    };
+
+    info.addTo(map);
+
+    function getColor(total) {
+      return total > 15 ? '#08306b' :
+             total > 10 ? '#08519c' :
+             total > 6  ? '#2171b5' :
+             total > 3  ? '#4292c6' :
+             total > 1  ? '#6baed6' :
+             total > 0  ? '#9ecae1' :
+                          '#eeeeee';
+    }
+
+    function style(feature) {
+      const p = feature.properties;
+      const uf = p.sigla || p.uf || p.UF || p.postal || p.id;
+      const nome = (p.name || p.nome || p.NOME || '').toLowerCase();
+      const d = porUF[uf] || porNome[nome] || {total: 0};
+
+      return {
+        fillColor: getColor(d.total),
+        weight: 1,
+        opacity: 1,
+        color: '#666',
+        fillOpacity: 0.85
+      };
+    }
+
+    function highlightFeature(e) {
+      const layer = e.target;
+      layer.setStyle({
+        weight: 3,
+        color: '#111',
+        fillOpacity: 0.95
+      });
+      layer.bringToFront();
+
+      const p = layer.feature.properties;
+      const uf = p.sigla || p.uf || p.UF || p.postal || p.id;
+      const nome = (p.name || p.nome || p.NOME || '').toLowerCase();
+      const d = porUF[uf] || porNome[nome];
+
+      if (d) info.update(d);
+    }
+
+    function resetHighlight(e) {
+      geojson.resetStyle(e.target);
+      info.update();
+    }
+
+    function zoomToFeature(e) {
+      map.fitBounds(e.target.getBounds());
+    }
+
+    function onEachFeature(feature, layer) {
+      const p = feature.properties;
+      const uf = p.sigla || p.uf || p.UF || p.postal || p.id;
+      const nome = (p.name || p.nome || p.NOME || '').toLowerCase();
+      const d = porUF[uf] || porNome[nome];
+
+      if (d) {
+        layer.bindTooltip(`${d.estado} (${d.uf}): ${d.total} parques`, {
+          sticky: true
+        });
+      }
+
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+        click: zoomToFeature
+      });
+    }
+
+    let geojson;
+
+    fetch('https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson')
+      .then(response => response.json())
+      .then(geoData => {
+        geojson = L.geoJson(geoData, {
+          style: style,
+          onEachFeature: onEachFeature
+        }).addTo(map);
+      });
+
+    const legend = L.control({position: 'bottomright'});
+
+    legend.onAdd = function () {
+      const div = L.DomUtil.create('div', 'legend');
+      const grades = [0, 1, 2, 4, 7, 11, 16];
+      const labels = [];
+
+      div.innerHTML += '<b>Total de parques</b><br>';
+
+      for (let i = 0; i < grades.length; i++) {
+        const from = grades[i];
+        const to = grades[i + 1];
+
+        labels.push(
+          '<i style="background:' + getColor(from) + '"></i> ' +
+          from + (to ? '&ndash;' + (to - 1) + '<br>' : '+')
+        );
+      }
+
+      div.innerHTML += labels.join('');
+      return div;
+    };
+
+    legend.addTo(map);
+  </script>
+</body>
+</html>
