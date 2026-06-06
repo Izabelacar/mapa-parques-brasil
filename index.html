@@ -2,116 +2,237 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <title>Mapa Interativo - Parques Tecnológicos do Brasil</title>
+  <title>Mapa Interativo - Parques Científicos, Tecnológicos e de Inovação</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
-    }
-    header {
-      padding: 16px 24px;
-      background: #1f2937;
-      color: white;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 22px;
-    }
-    header p {
-      margin: 6px 0 0;
-      font-size: 14px;
-      opacity: 0.9;
-    }
-    #map {
-      height: 78vh;
-      width: 100%;
-    }
-    .info {
-      padding: 12px 14px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-      min-width: 220px;
-      line-height: 1.45;
-    }
-    .info h3 {
-      margin: 0 0 8px;
-      font-size: 16px;
-    }
-    .legend {
-      line-height: 18px;
-      color: #333;
-      background: white;
-      padding: 10px 12px;
-      border-radius: 8px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-    }
-    .legend i {
-      width: 18px;
-      height: 18px;
-      float: left;
-      margin-right: 8px;
-      opacity: 0.85;
-    }
-    footer {
-      padding: 10px 20px;
-      font-size: 12px;
-      color: #555;
-      background: #fff;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <header>
-    <h1>Parques Ciêntificos,Tecnológicos e de Inovação no Brasil</h1>
-    <p>Total nacional: 124 parques — Planejamento: 9 | Implantação: 39 | Operação: 76</p>
+    <h1>Parques Científicos, Tecnológicos e de Inovação</h1>
+    <p id="subtitle">Brasil — Total nacional: 124 parques | Planejamento: 9 | Implantação: 39 | Operação: 76</p>
   </header>
 
-  <div id="map"></div>
+  <div class="tabs">
+    <button id="btnBrasil" class="active" onclick="mostrarAba('brasil')">Brasil</button>
+    <button id="btnMundo" onclick="mostrarAba('mundo')">Mundo</button>
+  </div>
+
+  <div id="mapBrasil" class="map-container active"></div>
+  <div id="mapMundo" class="map-container"></div>
 
   <footer>
-    Fonte dos dados: InovaData-BR/UFV — https://www.inovadata-br.ufv.br/parks-page.
-    Observação: estados sem registro foram considerados com valor 0.
+    Fonte Brasil: InovaData-BR/UFV — https://www.inovadata-br.ufv.br/parks-page.
+    Dados mundiais: IASP — https://wwww.iasp.ws/our-members/directory
   </footer>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   <script>
-    const dados = [{"regiao": "Norte", "estado": "Acre", "uf": "AC", "total": 0, "planejamento": 0, "implantacao": 0, "operacao": 0}, {"regiao": "Norte", "estado": "Amapá", "uf": "AP", "total": 0, "planejamento": 0, "implantacao": 0, "operacao": 0}, {"regiao": "Norte", "estado": "Amazonas", "uf": "AM", "total": 7, "planejamento": 2, "implantacao": 5, "operacao": 0}, {"regiao": "Norte", "estado": "Pará", "uf": "PA", "total": 1, "planejamento": 0, "implantacao": 0, "operacao": 1}, {"regiao": "Norte", "estado": "Rondônia", "uf": "RO", "total": 2, "planejamento": 1, "implantacao": 1, "operacao": 0}, {"regiao": "Norte", "estado": "Roraima", "uf": "RR", "total": 0, "planejamento": 0, "implantacao": 0, "operacao": 0}, {"regiao": "Norte", "estado": "Tocantins", "uf": "TO", "total": 3, "planejamento": 0, "implantacao": 3, "operacao": 0}, {"regiao": "Nordeste", "estado": "Alagoas", "uf": "AL", "total": 2, "planejamento": 0, "implantacao": 1, "operacao": 1}, {"regiao": "Nordeste", "estado": "Bahia", "uf": "BA", "total": 2, "planejamento": 0, "implantacao": 1, "operacao": 1}, {"regiao": "Nordeste", "estado": "Ceará", "uf": "CE", "total": 1, "planejamento": 0, "implantacao": 0, "operacao": 1}, {"regiao": "Nordeste", "estado": "Maranhão", "uf": "MA", "total": 4, "planejamento": 0, "implantacao": 3, "operacao": 1}, {"regiao": "Nordeste", "estado": "Paraíba", "uf": "PB", "total": 2, "planejamento": 0, "implantacao": 1, "operacao": 1}, {"regiao": "Nordeste", "estado": "Pernambuco", "uf": "PE", "total": 3, "planejamento": 0, "implantacao": 1, "operacao": 2}, {"regiao": "Nordeste", "estado": "Piauí", "uf": "PI", "total": 1, "planejamento": 0, "implantacao": 1, "operacao": 0}, {"regiao": "Nordeste", "estado": "Rio Grande do Norte", "uf": "RN", "total": 3, "planejamento": 0, "implantacao": 1, "operacao": 2}, {"regiao": "Nordeste", "estado": "Sergipe", "uf": "SE", "total": 3, "planejamento": 0, "implantacao": 2, "operacao": 1}, {"regiao": "Centro-Oeste", "estado": "Goiás", "uf": "GO", "total": 4, "planejamento": 0, "implantacao": 3, "operacao": 1}, {"regiao": "Centro-Oeste", "estado": "Mato Grosso", "uf": "MT", "total": 3, "planejamento": 0, "implantacao": 3, "operacao": 0}, {"regiao": "Centro-Oeste", "estado": "Mato Grosso do Sul", "uf": "MS", "total": 1, "planejamento": 0, "implantacao": 0, "operacao": 1}, {"regiao": "Centro-Oeste", "estado": "Distrito Federal", "uf": "DF", "total": 2, "planejamento": 0, "implantacao": 0, "operacao": 2}, {"regiao": "Sudeste", "estado": "Espírito Santo", "uf": "ES", "total": 3, "planejamento": 0, "implantacao": 2, "operacao": 1}, {"regiao": "Sudeste", "estado": "Minas Gerais", "uf": "MG", "total": 14, "planejamento": 3, "implantacao": 3, "operacao": 8}, {"regiao": "Sudeste", "estado": "Rio de Janeiro", "uf": "RJ", "total": 6, "planejamento": 1, "implantacao": 2, "operacao": 3}, {"regiao": "Sudeste", "estado": "São Paulo", "uf": "SP", "total": 16, "planejamento": 1, "implantacao": 0, "operacao": 15}, {"regiao": "Sul", "estado": "Paraná", "uf": "PR", "total": 14, "planejamento": 1, "implantacao": 3, "operacao": 10}, {"regiao": "Sul", "estado": "Rio Grande do Sul", "uf": "RS", "total": 19, "planejamento": 0, "implantacao": 2, "operacao": 17}, {"regiao": "Sul", "estado": "Santa Catarina", "uf": "SC", "total": 8, "planejamento": 0, "implantacao": 1, "operacao": 7}];
+    const dadosBrasil = [
+      { regiao: "Norte", estado: "Acre", uf: "AC", total: 0, planejamento: 0, implantacao: 0, operacao: 0 },
+      { regiao: "Norte", estado: "Amapá", uf: "AP", total: 0, planejamento: 0, implantacao: 0, operacao: 0 },
+      { regiao: "Norte", estado: "Amazonas", uf: "AM", total: 7, planejamento: 2, implantacao: 5, operacao: 0 },
+      { regiao: "Norte", estado: "Pará", uf: "PA", total: 1, planejamento: 0, implantacao: 0, operacao: 1 },
+      { regiao: "Norte", estado: "Rondônia", uf: "RO", total: 2, planejamento: 1, implantacao: 1, operacao: 0 },
+      { regiao: "Norte", estado: "Roraima", uf: "RR", total: 0, planejamento: 0, implantacao: 0, operacao: 0 },
+      { regiao: "Norte", estado: "Tocantins", uf: "TO", total: 3, planejamento: 0, implantacao: 3, operacao: 0 },
 
-    const porUF = {};
-    const porNome = {};
+      { regiao: "Nordeste", estado: "Alagoas", uf: "AL", total: 2, planejamento: 0, implantacao: 1, operacao: 1 },
+      { regiao: "Nordeste", estado: "Bahia", uf: "BA", total: 2, planejamento: 0, implantacao: 1, operacao: 1 },
+      { regiao: "Nordeste", estado: "Ceará", uf: "CE", total: 1, planejamento: 0, implantacao: 0, operacao: 1 },
+      { regiao: "Nordeste", estado: "Maranhão", uf: "MA", total: 4, planejamento: 0, implantacao: 3, operacao: 1 },
+      { regiao: "Nordeste", estado: "Paraíba", uf: "PB", total: 2, planejamento: 0, implantacao: 1, operacao: 1 },
+      { regiao: "Nordeste", estado: "Pernambuco", uf: "PE", total: 3, planejamento: 0, implantacao: 1, operacao: 2 },
+      { regiao: "Nordeste", estado: "Piauí", uf: "PI", total: 1, planejamento: 0, implantacao: 1, operacao: 0 },
+      { regiao: "Nordeste", estado: "Rio Grande do Norte", uf: "RN", total: 3, planejamento: 0, implantacao: 1, operacao: 2 },
+      { regiao: "Nordeste", estado: "Sergipe", uf: "SE", total: 3, planejamento: 0, implantacao: 2, operacao: 1 },
 
-    dados.forEach(d => {
-      porUF[d.uf] = d;
-      porNome[d.estado.toLowerCase()] = d;
-    });
+      { regiao: "Centro-Oeste", estado: "Goiás", uf: "GO", total: 4, planejamento: 0, implantacao: 3, operacao: 1 },
+      { regiao: "Centro-Oeste", estado: "Mato Grosso", uf: "MT", total: 3, planejamento: 0, implantacao: 3, operacao: 0 },
+      { regiao: "Centro-Oeste", estado: "Mato Grosso do Sul", uf: "MS", total: 1, planejamento: 0, implantacao: 0, operacao: 1 },
+      { regiao: "Centro-Oeste", estado: "Distrito Federal", uf: "DF", total: 2, planejamento: 0, implantacao: 0, operacao: 2 },
 
-    const totais = {
-      total: dados.reduce((s, d) => s + d.total, 0),
-      planejamento: dados.reduce((s, d) => s + d.planejamento, 0),
-      implantacao: dados.reduce((s, d) => s + d.implantacao, 0),
-      operacao: dados.reduce((s, d) => s + d.operacao, 0)
+      { regiao: "Sudeste", estado: "Espírito Santo", uf: "ES", total: 3, planejamento: 0, implantacao: 2, operacao: 1 },
+      { regiao: "Sudeste", estado: "Minas Gerais", uf: "MG", total: 14, planejamento: 3, implantacao: 3, operacao: 8 },
+      { regiao: "Sudeste", estado: "Rio de Janeiro", uf: "RJ", total: 6, planejamento: 1, implantacao: 2, operacao: 3 },
+      { regiao: "Sudeste", estado: "São Paulo", uf: "SP", total: 16, planejamento: 1, implantacao: 0, operacao: 15 },
+
+      { regiao: "Sul", estado: "Paraná", uf: "PR", total: 14, planejamento: 1, implantacao: 3, operacao: 10 },
+      { regiao: "Sul", estado: "Rio Grande do Sul", uf: "RS", total: 19, planejamento: 0, implantacao: 2, operacao: 17 },
+      { regiao: "Sul", estado: "Santa Catarina", uf: "SC", total: 8, planejamento: 0, implantacao: 1, operacao: 7 }
+    ];
+
+  const dadosMundo = [
+  // África
+  { pais: "África do Sul", iso3: "ZAF", total: 3 },
+  { pais: "Angola", iso3: "AGO", total: 1 },
+  { pais: "Botsuana", iso3: "BWA", total: 1 },
+  { pais: "Cabo Verde", iso3: "CPV", total: 1 },
+  { pais: "Camarões", iso3: "CMR", total: 1 },
+  { pais: "Essuatíni", iso3: "SWZ", total: 1 },
+  { pais: "Marrocos", iso3: "MAR", total: 1 },
+  { pais: "Nigéria", iso3: "NGA", total: 3 },
+  { pais: "Quénia", iso3: "KEN", total: 5 },
+  { pais: "Zimbabué", iso3: "ZWE", total: 1 },
+
+  // América
+  { pais: "Argentina", iso3: "ARG", total: 3 },
+  { pais: "Brasil", iso3: "BRA", total: 21 },
+  { pais: "Canadá", iso3: "CAN", total: 13 },
+  { pais: "Colômbia", iso3: "COL", total: 2 },
+  { pais: "Cuba", iso3: "CUB", total: 2 },
+  { pais: "Equador", iso3: "ECU", total: 4 },
+  { pais: "Estados Unidos", iso3: "USA", total: 6 },
+  { pais: "México", iso3: "MEX", total: 3 },
+  { pais: "Panamá", iso3: "PAN", total: 1 },
+  { pais: "Paraguai", iso3: "PRY", total: 1 },
+  { pais: "Peru", iso3: "PER", total: 1 },
+  { pais: "República Dominicana", iso3: "DOM", total: 1 },
+  { pais: "Uruguai", iso3: "URY", total: 3 },
+  { pais: "Venezuela", iso3: "VEN", total: 1 },
+
+  // Ásia
+  { pais: "Arábia Saudita", iso3: "SAU", total: 17 },
+  { pais: "Catar", iso3: "QAT", total: 1 },
+  { pais: "Cazaquistão", iso3: "KAZ", total: 1 },
+  { pais: "China", iso3: "CHN", total: 32 },
+  { pais: "Coreia do Sul", iso3: "KOR", total: 2 },
+  { pais: "Emirados Árabes Unidos", iso3: "ARE", total: 1 },
+  { pais: "Índia", iso3: "IND", total: 2 },
+  { pais: "Irã", iso3: "IRN", total: 8 },
+  { pais: "Japão", iso3: "JPN", total: 1 },
+  { pais: "Malásia", iso3: "MYS", total: 1 },
+  { pais: "Omã", iso3: "OMN", total: 2 },
+  { pais: "Palestina", iso3: "PSE", total: 1 },
+  { pais: "Paquistão", iso3: "PAK", total: 4 },
+  { pais: "Singapura", iso3: "SGP", total: 2 },
+  { pais: "Tailândia", iso3: "THA", total: 6 },
+  { pais: "Taiwan", iso3: "TWN", total: 4 },
+  { pais: "Turquia", iso3: "TUR", total: 20 },
+  { pais: "Turquemenistão", iso3: "TKM", total: 1 },
+  { pais: "Uzbequistão", iso3: "UZB", total: 3 },
+  { pais: "Vietnã", iso3: "VNM", total: 2 },
+
+  // Europa
+  { pais: "Albânia", iso3: "ALB", total: 1 },
+  { pais: "Alemanha", iso3: "DEU", total: 8 },
+  { pais: "Andorra", iso3: "AND", total: 1 },
+  { pais: "Áustria", iso3: "AUT", total: 4 },
+  { pais: "Bélgica", iso3: "BEL", total: 5 },
+  { pais: "Bulgária", iso3: "BGR", total: 2 },
+  { pais: "Croácia", iso3: "HRV", total: 5 },
+  { pais: "Dinamarca", iso3: "DNK", total: 2 },
+  { pais: "Eslováquia", iso3: "SVK", total: 1 },
+  { pais: "Eslovénia", iso3: "SVN", total: 1 },
+  { pais: "Espanha", iso3: "ESP", total: 27 },
+  { pais: "Estónia", iso3: "EST", total: 2 },
+  { pais: "Finlândia", iso3: "FIN", total: 1 },
+  { pais: "França", iso3: "FRA", total: 8 },
+  { pais: "Grécia", iso3: "GRC", total: 5 },
+  { pais: "Hungria", iso3: "HUN", total: 7 },
+  { pais: "Irlanda", iso3: "IRL", total: 1 },
+  { pais: "Islândia", iso3: "ISL", total: 1 },
+  { pais: "Itália", iso3: "ITA", total: 15 },
+  { pais: "Kosovo", iso3: "XKX", total: 2 },
+  { pais: "Letónia", iso3: "LVA", total: 1 },
+  { pais: "Lituânia", iso3: "LTU", total: 2 },
+  { pais: "Luxemburgo", iso3: "LUX", total: 2 },
+  { pais: "Moldávia", iso3: "MDA", total: 1 },
+  { pais: "Noruega", iso3: "NOR", total: 2 },
+  { pais: "Países Baixos", iso3: "NLD", total: 6 },
+  { pais: "Polónia", iso3: "POL", total: 6 },
+  { pais: "Portugal", iso3: "PRT", total: 10 },
+  { pais: "Reino Unido", iso3: "GBR", total: 11 },
+  { pais: "República Tcheca", iso3: "CZE", total: 1 },
+  { pais: "Roménia", iso3: "ROU", total: 4 },
+  //{ pais: "Rússia", iso3: "RUS", total: 190 },
+  { pais: "Sérvia", iso3: "SRB", total: 3 },
+  { pais: "Suécia", iso3: "SWE", total: 14 },
+  { pais: "Suíça", iso3: "CHE", total: 3 },
+  { pais: "Ucrânia", iso3: "UKR", total: 1 },
+
+  // Oceania
+  { pais: "Austrália", iso3: "AUS", total: 2 },
+  { pais: "Nova Zelândia", iso3: "NZL", total: 1 }
+];
+
+    const subtitle = document.getElementById("subtitle");
+
+    function mostrarAba(aba) {
+      document.getElementById("mapBrasil").classList.remove("active");
+      document.getElementById("mapMundo").classList.remove("active");
+      document.getElementById("btnBrasil").classList.remove("active");
+      document.getElementById("btnMundo").classList.remove("active");
+
+      if (aba === "brasil") {
+        document.getElementById("mapBrasil").classList.add("active");
+        document.getElementById("btnBrasil").classList.add("active");
+        subtitle.innerText = "Brasil — Total nacional: 124 parques | Planejamento: 9 | Implantação: 39 | Operação: 76";
+        setTimeout(() => mapaBrasil.invalidateSize(), 200);
+      } else {
+        document.getElementById("mapMundo").classList.add("active");
+        document.getElementById("btnMundo").classList.add("active");
+        setTimeout(() => mapaMundo.invalidateSize(), 200);
+      }
+    }
+
+    function getColorBrasil(total) {
+      return total > 15 ? "#596ab6" :
+             total > 10 ? "#7685d4" :
+             total > 6  ? "#94a0f2" :
+             total > 3  ? "#b2bdff" :
+             total > 1  ? "#c1ccff" :
+             total > 0  ? "#d0dbff" :
+                           "#fffcf3";
+    }
+
+    function getColorMundo(total) {
+  return total >= 50 ? "#596ab6" :
+         total >= 40 ? "#7685d4" :
+         total >= 30  ? "#94a0f2" :
+         total >= 20  ? "#b2bdff" :
+         total >= 10  ? "#c1ccff" :
+         total >= 1   ? "#d0dbff" :
+                         "#fffcf3";
+}
+    const totaisBrasil = {
+      total: dadosBrasil.reduce((s, d) => s + d.total, 0),
+      planejamento: dadosBrasil.reduce((s, d) => s + d.planejamento, 0),
+      implantacao: dadosBrasil.reduce((s, d) => s + d.implantacao, 0),
+      operacao: dadosBrasil.reduce((s, d) => s + d.operacao, 0)
     };
 
-    const map = L.map('map').setView([-14.235, -51.9253], 4);
+    const porUF = {};
+    const porNomeEstado = {};
+    dadosBrasil.forEach(d => {
+      porUF[d.uf] = d;
+      porNomeEstado[d.estado.toLowerCase()] = d;
+    });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    const porISO3 = {};
+    dadosMundo.forEach(d => {
+      porISO3[d.iso3] = d;
+    });
+
+    const mapaBrasil = L.map("mapBrasil").setView([-14.235, -51.9253], 4);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 8,
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(mapaBrasil);
 
-    const info = L.control();
+    const infoBrasil = L.control();
 
-    info.onAdd = function () {
-      this._div = L.DomUtil.create('div', 'info');
+    infoBrasil.onAdd = function () {
+      this._div = L.DomUtil.create("div", "info");
       this.update();
       return this._div;
     };
 
-    info.update = function (d) {
+    infoBrasil.update = function (d) {
       this._div.innerHTML = d ? `
         <h3>${d.estado} (${d.uf})</h3>
         <b>Total:</b> ${d.total}<br>
@@ -122,120 +243,200 @@
       ` : `
         <h3>Brasil</h3>
         Passe o mouse sobre um estado.<br><br>
-        <b>Total:</b> ${totais.total}<br>
-        <b>Planejamento:</b> ${totais.planejamento}<br>
-        <b>Implantação:</b> ${totais.implantacao}<br>
-        <b>Operação:</b> ${totais.operacao}
+        <b>Total nacional:</b> ${totaisBrasil.total}<br>
+        <b>Planejamento:</b> ${totaisBrasil.planejamento}<br>
+        <b>Implantação:</b> ${totaisBrasil.implantacao}<br>
+        <b>Operação:</b> ${totaisBrasil.operacao}
       `;
     };
 
-    info.addTo(map);
+    infoBrasil.addTo(mapaBrasil);
 
-    function getColor(total) {
-      return total > 15 ? '#08306b' :
-             total > 10 ? '#08519c' :
-             total > 6  ? '#2171b5' :
-             total > 3  ? '#4292c6' :
-             total > 1  ? '#6baed6' :
-             total > 0  ? '#9ecae1' :
-                          '#eeeeee';
-    }
+    let camadaBrasil;
 
-    function style(feature) {
-      const p = feature.properties;
-      const uf = p.sigla || p.uf || p.UF || p.postal || p.id;
-      const nome = (p.name || p.nome || p.NOME || '').toLowerCase();
-      const d = porUF[uf] || porNome[nome] || {total: 0};
-
-      return {
-        fillColor: getColor(d.total),
-        weight: 1,
-        opacity: 1,
-        color: '#666',
-        fillOpacity: 0.85
-      };
-    }
-
-    function highlightFeature(e) {
-      const layer = e.target;
-      layer.setStyle({
-        weight: 3,
-        color: '#111',
-        fillOpacity: 0.95
-      });
-      layer.bringToFront();
-
-      const p = layer.feature.properties;
-      const uf = p.sigla || p.uf || p.UF || p.postal || p.id;
-      const nome = (p.name || p.nome || p.NOME || '').toLowerCase();
-      const d = porUF[uf] || porNome[nome];
-
-      if (d) info.update(d);
-    }
-
-    function resetHighlight(e) {
-      geojson.resetStyle(e.target);
-      info.update();
-    }
-
-    function zoomToFeature(e) {
-      map.fitBounds(e.target.getBounds());
-    }
-
-    function onEachFeature(feature, layer) {
-      const p = feature.properties;
-      const uf = p.sigla || p.uf || p.UF || p.postal || p.id;
-      const nome = (p.name || p.nome || p.NOME || '').toLowerCase();
-      const d = porUF[uf] || porNome[nome];
-
-      if (d) {
-        layer.bindTooltip(`${d.estado} (${d.uf}): ${d.total} parques`, {
-          sticky: true
-        });
-      }
-
-      layer.on({
-        mouseover: highlightFeature,
-        mouseout: resetHighlight,
-        click: zoomToFeature
-      });
-    }
-
-    let geojson;
-
-    fetch('https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson')
+    fetch("https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson")
       .then(response => response.json())
       .then(geoData => {
-        geojson = L.geoJson(geoData, {
-          style: style,
-          onEachFeature: onEachFeature
-        }).addTo(map);
+        camadaBrasil = L.geoJson(geoData, {
+          style: function (feature) {
+            const p = feature.properties;
+            const uf = p.sigla || p.uf || p.UF || p.postal || p.id;
+            const nome = (p.name || p.nome || p.NOME || "").toLowerCase();
+            const d = porUF[uf] || porNomeEstado[nome] || { total: 0 };
+
+            return {
+              fillColor: getColorBrasil(d.total),
+              weight: 1,
+              opacity: 1,
+              color: "#666",
+              fillOpacity: 0.9
+            };
+          },
+
+          onEachFeature: function (feature, layer) {
+            const p = feature.properties;
+            const uf = p.sigla || p.uf || p.UF || p.postal || p.id;
+            const nome = (p.name || p.nome || p.NOME || "").toLowerCase();
+            const d = porUF[uf] || porNomeEstado[nome];
+
+            if (d) {
+              layer.bindTooltip(`${d.estado} (${d.uf}): ${d.total} parques`, { sticky: true });
+            }
+
+            layer.on({
+              mouseover: function () {
+                layer.setStyle({ weight: 3, color: "#111", fillOpacity: 1 });
+                if (d) infoBrasil.update(d);
+              },
+              mouseout: function () {
+                camadaBrasil.resetStyle(layer);
+                infoBrasil.update();
+              },
+              click: function () {
+                mapaBrasil.fitBounds(layer.getBounds());
+              }
+            });
+          }
+        }).addTo(mapaBrasil);
       });
 
-    const legend = L.control({position: 'bottomright'});
+    const legendaBrasil = L.control({ position: "bottomright" });
 
-    legend.onAdd = function () {
-      const div = L.DomUtil.create('div', 'legend');
+    legendaBrasil.onAdd = function () {
+      const div = L.DomUtil.create("div", "legend");
       const grades = [0, 1, 2, 4, 7, 11, 16];
       const labels = [];
 
-      div.innerHTML += '<b>Total de parques</b><br>';
+      div.innerHTML += "<b>Total de parques</b><br>";
 
       for (let i = 0; i < grades.length; i++) {
         const from = grades[i];
         const to = grades[i + 1];
 
         labels.push(
-          '<i style="background:' + getColor(from) + '"></i> ' +
-          from + (to ? '&ndash;' + (to - 1) + '<br>' : '+')
+          '<i style="background:' + getColorBrasil(from) + '"></i> ' +
+          from + (to ? "&ndash;" + (to - 1) + "<br>" : "+")
         );
       }
 
-      div.innerHTML += labels.join('');
+      div.innerHTML += labels.join("");
       return div;
     };
 
-    legend.addTo(map);
+    legendaBrasil.addTo(mapaBrasil);
+
+    const mapaMundo = L.map("mapMundo").setView([20, 0], 2);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 6,
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(mapaMundo);
+
+    const infoMundo = L.control();
+
+    infoMundo.onAdd = function () {
+      this._div = L.DomUtil.create("div", "info");
+      this.update();
+      return this._div;
+    };
+
+    infoMundo.update = function (d) {
+      this._div.innerHTML = d ? `
+        <h3>${d.pais}</h3>
+        <b>Total:</b> ${d.total}<br>
+       
+      ` : `
+        <h3>Mundo</h3>
+        Passe o mouse sobre um país.<br><br>
+        
+      `;
+    };
+
+    infoMundo.addTo(mapaMundo);
+
+    let camadaMundo;
+
+    fetch("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json")
+      .then(response => response.json())
+      .then(geoData => {
+        camadaMundo = L.geoJson(geoData, {
+          style: function (feature) {
+            const iso3 = feature.id;
+            const d = porISO3[iso3] || { total: 0 };
+
+            return {
+              fillColor: getColorMundo(d.total),
+              weight: 1,
+              opacity: 1,
+              color: "#666",
+              fillOpacity: 0.85
+            };
+          },
+
+          onEachFeature: function (feature, layer) {
+            const iso3 = feature.id;
+            const nomePais = feature.properties.name;
+            const d = porISO3[iso3];
+
+            layer.bindTooltip(
+              d ? `${d.pais}: ${d.total} parques` : `${nomePais}: sem dado`,
+              { sticky: true }
+            );
+
+            layer.on({
+              mouseover: function () {
+                layer.setStyle({ weight: 2, color: "#111", fillOpacity: 1 });
+
+                if (d) {
+                  infoMundo.update(d);
+                } else {
+                  infoMundo.update({
+                    pais: nomePais,
+                    total: 0,
+                    planejamento: 0,
+                    implantacao: 0,
+                    operacao: 0
+                  });
+                }
+              },
+
+              mouseout: function () {
+                camadaMundo.resetStyle(layer);
+                infoMundo.update();
+              },
+
+              click: function () {
+                mapaMundo.fitBounds(layer.getBounds());
+              }
+            });
+          }
+        }).addTo(mapaMundo);
+      });
+
+    const legendaMundo = L.control({ position: "bottomright" });
+
+    legendaMundo.onAdd = function () {
+      const div = L.DomUtil.create("div", "legend");
+     const grades = [0, 1, 5, 10, 15, 20, 30];
+      const labels = [];
+
+      div.innerHTML += "<b>Total de parques</b><br>";
+
+      for (let i = 0; i < grades.length; i++) {
+        const from = grades[i];
+        const to = grades[i + 1];
+
+        labels.push(
+          '<i style="background:' + getColorMundo(from) + '"></i> ' +
+          from + (to ? "&ndash;" + (to - 1) + "<br>" : "+")
+        );
+      }
+
+      div.innerHTML += labels.join("");
+      return div;
+    };
+
+    legendaMundo.addTo(mapaMundo);
   </script>
 </body>
 </html>
