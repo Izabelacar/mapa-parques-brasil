@@ -1,6 +1,6 @@
 const dadosBrasil = [
   { regiao: "Norte", estado: "Acre", uf: "AC", total: 0, planejamento: 0, implantacao: 0, operacao: 0 },
-  { regiao: "Norte", estado: "Amapá", uf: "AP", total: 0, planejamento: 0, implantacao: 0, operacao: 0 },
+  { regiao: "Norte", estado: "Amapá", uf: "AP", total: 1, planejamento: 0, implantacao: 1, operacao: 0 },
   { regiao: "Norte", estado: "Amazonas", uf: "AM", total: 7, planejamento: 2, implantacao: 5, operacao: 0 },
   { regiao: "Norte", estado: "Pará", uf: "PA", total: 1, planejamento: 0, implantacao: 0, operacao: 1 },
   { regiao: "Norte", estado: "Rondônia", uf: "RO", total: 2, planejamento: 1, implantacao: 1, operacao: 0 },
