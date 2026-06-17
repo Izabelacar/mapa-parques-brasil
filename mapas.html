@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mapas de Parques de Inovação</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div id="header"></div>
+
+<div id="tabs"></div>
+
+<div id="mapBrasil" class="map-container active"></div>
+
+<div id="mapMundo" class="map-container"></div>
+
+<div id="footer"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="data/dadosBrasil.js"></script>
+<script src="data/dadosMundo.js"></script>
+
+<script src="components/header.js"></script>
+<script src="components/tabs.js"></script>
+<script src="components/footer.js"></script>
+
+<script src="script.js"></script>
+
+</body>
+</html>
