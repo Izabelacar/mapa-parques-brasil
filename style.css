@@ -13,7 +13,8 @@ body.mapa-page {
 }
 
 body.home-page,
-body.cadeias-page {
+body.cadeias-page,
+body.projetos-page {
   overflow: auto;
 }
 
@@ -40,6 +41,7 @@ header p {
   padding: 12px 24px;
   background: white;
   border-bottom: 1px solid #ddd;
+  flex-wrap: wrap;
 }
 
 .tabs button {
@@ -212,7 +214,8 @@ footer {
   font-weight: bold;
   color: #596ab6;
 }
-body.cadeias-page {
+body.cadeias-page,
+body.projetos-page {
   overflow: auto;
   background: #f5f7fb;
 }
@@ -280,7 +283,7 @@ body.cadeias-page {
 
 .bar-row {
   display: grid;
-  grid-template-columns: 160px 1fr 100px;
+  grid-template-columns: 160px 1fr 120px;
   align-items: center;
   gap: 12px;
   margin: 10px 0;
@@ -288,6 +291,11 @@ body.cadeias-page {
 
 .bar-label {
   font-weight: bold;
+  font-size: 14px;
+  color: #374151;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .bar-track {
@@ -350,42 +358,6 @@ tbody tr:hover {
   box-shadow: 0 4px 14px rgba(0,0,0,.08);
 }
 
-.bar-row {
-  display: grid;
-  grid-template-columns: 160px 1fr 120px;
-  align-items: center;
-  gap: 12px;
-  margin: 10px 0;
-}
-
-.bar-track {
-  height: 22px;
-  background: #e5e7eb;
-  border-radius: 20px;
-  overflow: hidden;
-}
-
-.bar-fill {
-  height: 100%;
-  background: #596ab6;
-}
-
-.bar-value {
-  text-align: right;
-  font-weight: bold;
-}
-
-.bar-label {
-  font-weight: bold;
-  font-size: 14px;
-  color: #374151;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* card de ranking por valor recebe um tom mais escuro da mesma família,
-   só para diferenciar visualmente do ranking por quantidade */
 .ranking-card--valor .bar-fill {
   background: #2f3a73;
 }
@@ -419,8 +391,99 @@ td.col-nivel-micro {
   padding: 30px !important;
 }
 
+/* ADAPTAÇÃO DO PROTÓTIPO DE PROJETOS */
+.projetos-main {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.pagina-secao {
+  display: none;
+}
+
+.pagina-secao.ativa {
+  display: block;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.project-card,
+.lab-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.08);
+  border-top: 5px solid #596ab6;
+}
+
+.project-card h3,
+.lab-card h4 {
+  margin: 10px 0 8px;
+  color: #1f2937;
+}
+
+.project-card p,
+.lab-card p {
+  color: #4b5563;
+  line-height: 1.45;
+  font-size: 14px;
+}
+
+.tag,
+.area-dot {
+  display: inline-block;
+  background: #eef2ff;
+  color: #596ab6;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.infra-list,
+.lista-dados {
+  padding-left: 18px;
+  color: #374151;
+}
+
+.infra-list li,
+.lista-dados li {
+  margin: 8px 0;
+  line-height: 1.4;
+}
+
+.project-card h4 {
+  margin-bottom: 4px;
+  color: #2f3a73;
+}
+
+.cards-grid--infra .lab-card {
+  border-top-color: #2f3a73;
+}
+
 @media (max-width: 720px) {
   .bar-row {
     grid-template-columns: 110px 1fr 90px;
+  }
+
+  .ranking-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cadeias-main {
+    padding: 16px;
+  }
+
+  .tabs {
+    padding: 10px 16px;
+  }
+
+  .tabs button {
+    flex: 1;
   }
 }

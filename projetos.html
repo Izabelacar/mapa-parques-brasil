@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projetos e Infraestrutura | Ecossistema de Santarém</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="projetos-page">
+  <header>
+    <h1>Ecossistema de Santarém</h1>
+    <p>Visualização dos projetos, infraestrutura disponível e áreas de atuação</p>
+  </header>
+
+  <div class="tabs">
+    <button class="active" onclick="mostrarSecao('projetos')">Projetos</button>
+    <button onclick="mostrarSecao('infraestrutura')">Infraestrutura</button>
+    <button onclick="mostrarSecao('areas')">Áreas</button>
+    <button onclick="mostrarSecao('tabela')">Tabela geral</button>
+  </div>
+
+  <main class="cadeias-main projetos-main">
+    <section class="filtros-box">
+      <h2>Filtros de visualização</h2>
+      <div class="filtros-grid">
+        <label>
+          Buscar
+          <input id="searchInput" type="search" placeholder="Digite projeto, laboratório, curso ou área..." />
+        </label>
+        <label>
+          Área
+          <select id="areaFilter"><option value="">Todas as áreas</option></select>
+        </label>
+      </div>
+    </section>
+
+    <section class="kpis" id="stats"></section>
+
+    <section id="secao-projetos" class="pagina-secao ativa">
+      <div class="ranking-box">
+        <h2>Projetos estratégicos</h2>
+        <p>Cards com ideias de projetos conectadas às infraestruturas e áreas existentes.</p>
+        <div id="projectGrid" class="cards-grid"></div>
+      </div>
+    </section>
+
+    <section id="secao-infraestrutura" class="pagina-secao">
+      <div class="ranking-box">
+        <h2>Infraestrutura de pesquisa</h2>
+        <p>Laboratórios, núcleos, centros e estruturas que podem apoiar os projetos.</p>
+        <div id="labGrid" class="cards-grid cards-grid--infra"></div>
+      </div>
+    </section>
+
+    <section id="secao-areas" class="pagina-secao">
+      <div class="ranking-grid">
+        <div class="ranking-card">
+          <h2>Pós-graduação</h2>
+          <ul id="posList" class="lista-dados"></ul>
+        </div>
+        <div class="ranking-card">
+          <h2>Institutos, campi e cursos</h2>
+          <p>Base acadêmica relacionada ao ecossistema.</p>
+          <ul id="instList" class="lista-dados"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="secao-tabela" class="pagina-secao">
+      <div class="tabela-box">
+        <h2>Tabela geral</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Nome</th>
+                <th>Área</th>
+                <th>Descrição / vínculo</th>
+              </tr>
+            </thead>
+            <tbody id="tabelaGeral"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+         Ecossistema de Santarém
+  </footer>
+
+  <script src="data/dataProjeto.js"></script>
+  <script src="scriptProjeto.js"></script>
+</body>
+</html>
