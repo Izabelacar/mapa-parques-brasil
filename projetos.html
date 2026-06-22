@@ -3,82 +3,103 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Projetos e Infraestrutura | Ecossistema de Santarém</title>
+  <title>Ecossistema de Inovação de Santarém</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </head>
 <body class="projetos-page">
   <header>
-    <h1>Ecossistema de Santarém</h1>
-    <p>Visualização dos projetos, infraestrutura disponível e áreas de atuação</p>
+    <h1>Ecossistema de Inovação de Santarém</h1>
+    <p>Projetos, grupos de pesquisa, laboratórios e infraestrutura da rede — UFOPA · IFPA · UEPA</p>
   </header>
 
-  <div class="tabs">
-    <button class="active" onclick="mostrarSecao('projetos')">Projetos</button>
-    <button onclick="mostrarSecao('infraestrutura')">Infraestrutura</button>
-    <button onclick="mostrarSecao('areas')">Áreas</button>
-    <button onclick="mostrarSecao('tabela')">Tabela geral</button>
-  </div>
+  <nav class="tabs">
+    <button class="active" data-sec="geral" onclick="mostrarSecao('geral')">Visão geral</button>
+    <button data-sec="projetos" onclick="mostrarSecao('projetos')">Projetos</button>
+    <button data-sec="laboratorios" onclick="mostrarSecao('laboratorios')">Laboratórios</button>
+    <button data-sec="grupos" onclick="mostrarSecao('grupos')">Grupos de pesquisa</button>
+    <button data-sec="tabela" onclick="mostrarSecao('tabela')">Tabela geral</button>
+  </nav>
 
-  <main class="cadeias-main projetos-main">
+  <main class="projetos-main">
     <section class="filtros-box">
-      <h2>Filtros de visualização</h2>
       <div class="filtros-grid">
-        <label>
-          Buscar
-          <input id="searchInput" type="search" placeholder="Digite projeto, laboratório, curso ou área..." />
+        <label>Buscar
+          <input id="searchInput" type="search" placeholder="Projeto, laboratório, grupo, técnica, coordenador…" />
         </label>
-        <label>
-          Área
-          <select id="areaFilter"><option value="">Todas as áreas</option></select>
+        <label data-filtro="projetos" style="display:none">Ano do projeto
+          <select id="projAno"></select>
+        </label>
+        <label data-filtro="laboratorios" style="display:none">Instituição
+          <select id="labInst"></select>
+        </label>
+        <label data-filtro="grupos" style="display:none">Grande área
+          <select id="grupArea"></select>
         </label>
       </div>
     </section>
 
     <section class="kpis" id="stats"></section>
 
-    <section id="secao-projetos" class="pagina-secao ativa">
+    <!-- VISÃO GERAL -->
+    <section id="secao-geral" class="pagina-secao ativa">
+      <div class="canvas">
+        <div class="viz col-6">
+          <div class="viz-h"><span class="t">Grupos de pesquisa por grande área</span><span class="s">129 grupos certificados</span></div>
+          <div class="viz-b"><div class="chart-wrap"><canvas id="chArea"></canvas></div></div>
+        </div>
+        <div class="viz col-6">
+          <div class="viz-h"><span class="t">Pesquisadores por instituição</span><span class="s">soma por grupo</span></div>
+          <div class="viz-b"><div class="chart-wrap"><canvas id="chInst"></canvas></div></div>
+        </div>
+        <div class="viz col-8">
+          <div class="viz-h"><span class="t">Projetos de pesquisa por ano</span><span class="s">cadastros UFOPA</span></div>
+          <div class="viz-b"><div class="chart-wrap"><canvas id="chAno"></canvas></div></div>
+        </div>
+        <div class="viz col-4">
+          <div class="viz-h"><span class="t">Laboratórios por área</span><span class="s">top áreas</span></div>
+          <div class="viz-b"><div class="chart-wrap"><canvas id="chLabArea"></canvas></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJETOS -->
+    <section id="secao-projetos" class="pagina-secao">
       <div class="ranking-box">
-        <h2>Projetos estratégicos</h2>
-        <p>Cards com ideias de projetos conectadas às infraestruturas e áreas existentes.</p>
+        <h2>Projetos de pesquisa</h2>
+        <p>Pesquisas cadastradas na UFOPA, com coordenação, centro e palavras-chave.</p>
+        <p class="count-note" id="projCount"></p>
         <div id="projectGrid" class="cards-grid"></div>
       </div>
     </section>
 
-    <section id="secao-infraestrutura" class="pagina-secao">
+    <!-- LABORATÓRIOS -->
+    <section id="secao-laboratorios" class="pagina-secao">
       <div class="ranking-box">
-        <h2>Infraestrutura de pesquisa</h2>
-        <p>Laboratórios, núcleos, centros e estruturas que podem apoiar os projetos.</p>
-        <div id="labGrid" class="cards-grid cards-grid--infra"></div>
+        <h2>Laboratórios e infraestrutura</h2>
+        <p>Laboratórios, áreas de atuação, técnicas e número de equipamentos disponíveis.</p>
+        <p class="count-note" id="labCount"></p>
+        <div id="labGrid" class="cards-grid"></div>
       </div>
     </section>
 
-    <section id="secao-areas" class="pagina-secao">
-      <div class="ranking-grid">
-        <div class="ranking-card">
-          <h2>Pós-graduação</h2>
-          <ul id="posList" class="lista-dados"></ul>
-        </div>
-        <div class="ranking-card">
-          <h2>Institutos, campi e cursos</h2>
-          <p>Base acadêmica relacionada ao ecossistema.</p>
-          <ul id="instList" class="lista-dados"></ul>
-        </div>
+    <!-- GRUPOS -->
+    <section id="secao-grupos" class="pagina-secao">
+      <div class="ranking-box">
+        <h2>Grupos de pesquisa</h2>
+        <p>Grupos certificados, com grande área, instituição e capacidade (pesquisadores, estudantes, linhas).</p>
+        <p class="count-note" id="grupCount"></p>
+        <div id="grupGrid" class="cards-grid"></div>
       </div>
     </section>
 
+    <!-- TABELA -->
     <section id="secao-tabela" class="pagina-secao">
       <div class="tabela-box">
-        <h2>Tabela geral</h2>
+        <p class="count-note" id="tabCount"></p>
         <div class="table-wrapper">
           <table>
-            <thead>
-              <tr>
-                <th>Tipo</th>
-                <th>Nome</th>
-                <th>Área</th>
-                <th>Descrição / vínculo</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Tipo</th><th>Nome</th><th>Área</th><th>Descrição / vínculo</th></tr></thead>
             <tbody id="tabelaGeral"></tbody>
           </table>
         </div>
@@ -86,9 +107,7 @@
     </section>
   </main>
 
-  <footer>
-         Ecossistema de Santarém
-  </footer>
+  <footer>Ecossistema de Inovação de Santarém · Baixo Amazonas (PA) · dados: Rede de Inovação de Santarém</footer>
 
   <script src="data/dataProjeto.js"></script>
   <script src="scriptProjeto.js"></script>
